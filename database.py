@@ -39,3 +39,10 @@ def init_db():
     ''')
     conn.commit()
     conn.close()
+
+def delete_transaction(entry_id: int) -> None:
+    """Remove a ledger entry by its primary key."""
+    conn = get_connection()
+    conn.execute("DELETE FROM ledger WHERE id = ?", (entry_id,))
+    conn.commit()
+    conn.close()

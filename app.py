@@ -1,6 +1,6 @@
 import streamlit as st
 from datetime import date
-from database import init_db, get_connection
+from database import init_db, get_connection, delete_transaction
 import reports
 
 st.set_page_config(page_title="Tally-like ERP")
@@ -72,6 +72,32 @@ elif page == "Transactions":
             st.success("Transaction saved")
     else:
         st.info("Create accounts first.")
+
+    conn = get_connection()
+    rows = conn.execute(
+        """
+        SELECT l.id, l.date, a.name AS account, l.debit, l.credit, l.description
+        FROM ledger l
+        JOIN accounts a ON l.account_id = a.id
+        ORDER BY l.date DESC, l.id DESC
+        """
+    ).fetchall()
+    conn.close()
+    if rows:
+        st.subheader("Existing Transactions")
+        for r in rows:
+            cols = st.columns([2, 2, 2, 2, 3, 1])
+            cols[0].write(r["date"])
+            cols[1].write(r["account"])
+            cols[2].write(r["debit"])
+            cols[3].write(r["credit"])
+            cols[4].write(r["description"])
+            if cols[5].button("Delete", key=f"del_{r['id']}"):
+                delete_transaction(r["id"])
+                st.success("Transaction deleted")
+                st.experimental_rerun()
+    else:
+        st.info("No transactions yet.")
 
 elif page == "Reports":
     st.header("Reports")

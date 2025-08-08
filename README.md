@@ -1,6 +1,6 @@
 # Tax
 
-Simple Streamlit-based accounting app using SQLite storage.
+Simple Streamlit-based accounting app using SQLite storage. Create accounts, record and delete transactions, and view basic reports.
 
 ## Running
 
